@@ -1,0 +1,29 @@
+import numpy as np
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister,  Aer, execute
+#from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute
+from qiskit_aer import Aer
+def create_quantum_circuit():
+    inputs = QuantumRegister(3,'b') # input register = 3 qubits
+    output = QuantumRegister(1, 'r') # output register = 1 qubit 
+    qc = QuantumCircuit(inputs, output)
+    # initialize the three gates to a uniform super position
+    qc.h(inputs[0])
+    qc.h(inputs[1])
+    qc.h(inputs[2])
+    # initialize the result register to 1/sqrt(2) ( |0> - |1> )
+    qc.x(output[0]) # first apply the not gate to turn it from |0> to |1>
+    qc.h(output[0]) # apply hadamard gate 
+    ## Now create the circuit for f
+    #negage b2
+    qc.x(inputs[1])
+    # and the three gates into output
+    # we will use the multi-controlled x gate with b1, b2, b3 as controls and r as the output
+    qc.mcx([inputs[0], inputs[1], inputs[2]], output[0])
+    # restore the b2 line back to original value
+    qc.x(inputs[1])
+    # this is it!!
+    return qc 
+    
+# Let's execute the circuit
+qc = create_quantum_circuit()
+qc.draw('mpl', style="iqp")
