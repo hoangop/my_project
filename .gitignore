@@ -1,10 +1,18 @@
-# Python
-__pycache__/
-*.py[cod]
-*.egg
-*.egg-info/
-dist/
-build/
+# Bỏ qua thư mục môi trường ảo Python
 venv/
-ven/
-.env
+env/
+
+# Bỏ qua file output Jupyter
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Bỏ node_modules (nếu làm JS)
+node_modules/
+
+# Bỏ file cấu hình cá nhân
+*.log
+*.env
+*.sqlite
+.DS_Store
+

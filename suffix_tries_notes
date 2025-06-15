@@ -1,0 +1,48 @@
+class SuffixTrieNode:
+    
+    def __init__(self, node_id, orig_str):
+        self.orig_str = orig_str # a reference to the entire string
+        self.outgoing_edges = {} # dictionary from chars to edges
+        self.suffix_link = None  # suffix link : initially set to None
+        self.id = node_id # Note: id == 0 is taken to be root for now.
+        self.depth = 0 # automatically set the depth when node's parent is set
+        self.parent = None # parent pointer
+        
+    def is_root(self):
+        return self.id == 0
+        
+    def get_edge(self, char):
+        if char in self.outgoing_edges:
+            return self.outgoing_edges[char]
+        else:
+            return None
+        
+    def is_leaf(self):
+        return False
+    
+    def add_suffix_link(self, node):
+        self.suffix_link = node
+        
+    def add_outgoing_edge(self, new_edge):
+        edge_init_char = new_edge.get_char_at(0)
+        # ensure that an edge with the initial character does not exist
+        assert edge_init_char not in self.outgoing_edges, f"Char {edge_init_char} already has an outgoing edge for node id:{self.id}"
+        #ensure that the new_edge src matches self
+        assert new_edge.src.id == self.id, f"Src node in outgoing edge id:{new_edge.src.id} does not match node id {self.id}"
+        # add the new edge to the dictionary with the initial char as key
+        self.outgoing_edges[edge_init_char] = new_edge
+        # add a parent pointer from destination to the src of the new edge
+        new_edge.dest.parent = new_edge.src # set the parent pointer of the new edges dest
+        if not new_edge.is_leaf_edge(): # set the depth of the destination node for the edge
+            new_edge.dest.depth = self.depth + new_edge.length()
+       
+        
+    def find_edge_corresponding_to_child(self, child_node):
+        # search among outgoing edges to see if there is one whose destination is the child node
+        for (_, edge) in self.outgoing_edges.items():
+            if edge.dest.id == child_node.id:
+                return edge
+        return None # no such edge found
+    
+        
+    
