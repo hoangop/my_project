@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # hello.py
 
 from qiskit import QuantumCircuit, transpile
@@ -17,3 +18,6 @@ res = job.result()
 counts = res.get_counts()
 
 print("Counts:", counts)
+=======
+print("Hello, World!")
+>>>>>>> 59c1fb203c071831906d5cc4c399acad4f53ec96

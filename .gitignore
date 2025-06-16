@@ -1,5 +1,26 @@
+<<<<<<< HEAD
 # Virtual environment
 venv/
 ENV/
 env/
 .venv/
+=======
+# Bỏ qua thư mục môi trường ảo Python
+venv/
+env/
+
+# Bỏ qua file output Jupyter
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Bỏ node_modules (nếu làm JS)
+node_modules/
+
+# Bỏ file cấu hình cá nhân
+*.log
+*.env
+*.sqlite
+.DS_Store
+
+>>>>>>> 59c1fb203c071831906d5cc4c399acad4f53ec96
