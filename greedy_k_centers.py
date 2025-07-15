@@ -1,5 +1,34 @@
 from math import sqrt
 
+from matplotlib import pyplot as plt 
+
+
+def euclidean_distance(a, b):
+    (xa, ya) = a
+    (xb, yb) = b
+    return sqrt( (xb - xa)**2 + (yb - ya)**2)
+
+def calculate_R(coords, center_indices):
+    n = len(coords)
+    assert all( 0 <= j < n for j in center_indices)
+    rj_values = [ min([euclidean_distance(xj, coords[j]) for j in center_indices]) for xj in coords]
+    return max(rj_values)
+
+def plot_coords(coords, center_indices):
+    R = calculate_R(coords, center_indices)
+    coords_x = [x for (x,y) in coords]
+    coords_y = [y for (x, y) in coords]
+    centers_x = [coords_x[j] for j in center_indices]
+    centers_y = [coords_y[j] for j in center_indices]
+    figure, axes = plt.subplots()
+    axes.axis('equal')
+    for k in center_indices:
+        c = plt.Circle(coords[k], R, fill=True, alpha=0.5, facecolor='lightblue', clip_on=False, edgecolor='black', linewidth=1, linestyle='dashed')
+        axes.add_artist(c)
+    plt.scatter(coords_x, coords_y, s=30, marker='x' )
+    plt.scatter(centers_x, centers_y, s=50, marker='o')
+    plt.show()
+
 def euclidean_distance(a, b):
     (xa, ya) = a
     (xb, yb) = b
@@ -28,17 +57,14 @@ def greedy_k_centers(coords, k, debug=True): ## Please print messages from this 
     centers = [0] 
     if debug:
         print(f'Tâm khởi tạo (chỉ số 0): {coords[0]}')
-        
+    # your code here        
     # We already have one center, so we need to find k-1 more.
     for i in range(k - 1):
-        # Find the point that is farthest from any of the existing centers.
         (farthest_point_index, distance) = find_farthest_point_from_current_centers(coords, centers)
         
-        # Add this farthest point to our list of centers.
         centers.append(farthest_point_index)
         
         if debug:
-            # Iteration i+2 corresponds to finding the j-th center where j = i+2
             print(f'Vòng lặp {i+2}/{k}: Thêm tâm mới (chỉ số {farthest_point_index}): {coords[farthest_point_index]}')
 
     # After finding all k centers, calculate the final radius R.
@@ -52,3 +78,22 @@ def greedy_k_centers(coords, k, debug=True): ## Please print messages from this 
         print(f'Bán kính cuối cùng R: {R:.4f}')
         
     return centers, R
+
+#test
+from random import uniform
+## Generate 1000 points
+n = 1000
+k = 12
+coords = [(uniform(-2,-1), uniform(-2,2)) for i in range(n//4)] + [(uniform(-1,1), uniform(-1,1)) for i in range(n//4)] +  [(uniform(1,2), uniform(-2,0)) for i in range(n//4)] +  [(uniform(1,2), uniform(0,2)) for i in range(n//4)] 
+            
+(center_indices, R) = greedy_k_centers(coords, k, debug=False)
+plot_coords(coords, center_indices)
+def calculate_R(coords, center_indices):
+    n = len(coords)
+    assert all( 0 <= j < n for j in center_indices)
+    rj_values = [ min([euclidean_distance(xj, coords[j]) for j in center_indices]) for xj in coords]
+    return max(rj_values)
+
+assert len(center_indices) == k
+assert abs(R - calculate_R(coords, center_indices)) <= 1E-06, f'The returned value of R={R} from your function does not match with my computation. Something is wrong in your calculations'
+print('Test Passed (5 points)')
