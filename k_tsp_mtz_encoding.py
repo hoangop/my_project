@@ -1,7 +1,7 @@
 from pulp import *
 
 def k_tsp_mtz_encoding(n, k, cost_matrix):
-    # check inputs are OK
+    # check inputs 
     assert 1 <= k < n
     assert len(cost_matrix) == n, f'Cost matrix is not {n}x{n}'
     assert all(len(cj) == n for cj in cost_matrix), f'Cost matrix is not {n}x{n}'
@@ -23,13 +23,11 @@ def k_tsp_mtz_encoding(n, k, cost_matrix):
     prob += lpSum(x[(i, 0)] for i in range(1, n)) == k, "Degree_In_0"
 
     for i in range(1, n):
-        # Exactly one edge must enter vertex i
         prob += lpSum(x[(j, i)] for j in range(n) if j != i) == 1, f"Degree_In_{i}"
-        # Exactly one edge must leave vertex i
         prob += lpSum(x[(i, j)] for j in range(n) if j != i) == 1, f"Degree_Out_{i}"
 
     # 4. Time Stamp Constraints (MTZ, as discussed in Problem B)
-    M_val = n - 1 # or n is also common, but n-1 is sufficient for t_i in [1, n-1]
+    M_val = n - 1 
 
     for i in range(1, n):
         for j in range(1, n):
@@ -48,12 +46,12 @@ def k_tsp_mtz_encoding(n, k, cost_matrix):
     # Find starting edges from vertex 0 for each salesperson
     start_edges = []
     for j in range(1, n):
-        if x[(0, j)].varValue > 0.5: # Check if edge (0, j) is selected
+        if x[(0, j)].varValue > 0.5: 
             start_edges.append((0, j))
 
     # Construct each tour
     for tour_idx in range(k):
-        current_tour = [0] # Each tour starts at vertex 0
+        current_tour = [0] 
         current_node = 0
         
         # Find the next unvisited edge from 0
@@ -65,7 +63,7 @@ def k_tsp_mtz_encoding(n, k, cost_matrix):
                 break # Found the start for this salesperson
 
         # Traverse the rest of the tour
-        while current_node != 0: # Continue until we return to vertex 0
+        while current_node != 0: 
             found_next = False
             for j in range(n):
                 if j == current_node: # Avoid self-loops
@@ -73,19 +71,19 @@ def k_tsp_mtz_encoding(n, k, cost_matrix):
                 if x[(current_node, j)].varValue > 0.5 and (current_node, j) not in visited_edges:
                     visited_edges.add((current_node, j))
                     current_node = j
-                    if current_node != 0: # Don't add 0 again until the very end
+                    if current_node != 0: 
                         current_tour.append(current_node)
                     found_next = True
                     break
-            if not found_next and current_node != 0: # This means we are stuck, potentially a bug or problem
+            if not found_next and current_node != 0:
                 print(f"Warning: Could not find next edge from {current_node}. Incomplete tour.")
                 break
         
 
-        if len(current_tour) > 1: # Ensure it's not just [0] for an empty salesperson route
+        if len(current_tour) > 1:
             tours[tour_idx] = current_tour
-        else: # Handle case where a salesperson might not have any cities assigned if k is too high
-             tours[tour_idx] = [0] # An empty tour is just [0]
+        else: 
+             tours[tour_idx] = [0] # 
 
     # Let's re-extract the tours ensuring no double counting and matching exactly k tours.   
     final_tours = []
@@ -101,7 +99,7 @@ def k_tsp_mtz_encoding(n, k, cost_matrix):
         for j in range(1, n):
             if (start_node, j) in current_x:
                 next_node = j
-                del current_x[(start_node, j)] # Mark this edge as used
+                del current_x[(start_node, j)] 
                 break
         
         if next_node == -1: 
@@ -115,7 +113,7 @@ def k_tsp_mtz_encoding(n, k, cost_matrix):
         while current != 0:
             found_next_edge = False
             for j in range(n):
-                if j == current: continue # Skip self loop
+                if j == current: continue 
                 if (current, j) in current_x:
                     tour.append(j)
                     del current_x[(current, j)]
@@ -126,7 +124,7 @@ def k_tsp_mtz_encoding(n, k, cost_matrix):
                 break # Break to avoid infinite loop in case of issue
         
         # Remove the final 0 if it was appended (as it's the start node implicitly)
-        if tour[-1] == 0 and len(tour) > 1: # Remove if it's the end 0 and not just [0]
+        if tour[-1] == 0 and len(tour) > 1: 
              tour = tour[:-1]
         
         final_tours.append(tour)
