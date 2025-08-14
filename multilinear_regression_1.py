@@ -89,6 +89,8 @@ for n in range(1, 21):
         if r_squared > best_r_squared:
             best_r_squared = r_squared
             best_degree = n
+            if p_value <=0.05:
+                sound_degree  = best_degree
             
     except Exception as e:
         print(f"Error fitting model for degree {n}: {e}")
@@ -98,7 +100,7 @@ print("\n------------------------------------------------------------")
 print("--- Best Result Summary based on R-squared ---")
 print(f"The best polynomial degree is {best_degree} with an R-squared of {best_r_squared:.4f}")
 print("\n--- Additional Analysis ---")
-print("What do you observe from the results? How does normalizing the feature affect the R-squared values?")
+#print("What do you observe from the results? How does normalizing the feature affect the R-squared values?")
 print("Inspect the model summaries to determine the 'sound_degree' (the highest order model that makes sense).")
 print("The current value for 'sound_degree' is: ", sound_degree)
 print("------------------------------------------------------------")
