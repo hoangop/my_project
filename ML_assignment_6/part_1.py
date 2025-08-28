@@ -140,3 +140,31 @@ try:
     """)
 except ImportError:
     pass
+
+
+
+# Data and Labels 
+X = np.array([[1,8],[7,2],[6,-1],[-5,0], [-5,1], [-5,2],[6,3],[6,1],[5,2]])
+y = np.array([1,-1,-1,1,-1,1,1,-1,-1])
+
+# Support vector parameters 
+w, b = np.array([-1/4, 1/4]), -1/4
+
+# Plot the data and support vector boundaries 
+linear_plot(X, y, w=w, b=b)
+plt.show()
+# Calculate the norm of w
+norm_w = np.linalg.norm(w)
+# Calculate the margin
+margin = 2 / norm_w
+# Print the result
+print(f"The margin of this particular SVM is approximately: {margin:.4f}")
+
+# Extracting support vectors coordinates (assuming SVM model is trained)
+# Giả sử bạn đã train SVM với X_train và lưu model vào biến svm_model
+# Lấy chỉ số các support vector
+#support_indices = svm_model.support_
+# Lấy toạ độ các support vector
+#support_vectors = [tuple(X_train[i]) for i in support_indices]
+#print("Support vectors:", support_vectors)
+
