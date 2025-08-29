@@ -3,6 +3,8 @@ from sklearn.datasets import make_blobs
 from matplotlib.colors import Normalize
 import matplotlib.pyplot as plt
 #%matplotlib inline
+from sklearn.svm import LinearSVC, SVC
+from sklearn.model_selection import cross_val_score
 
 def linear_plot(X, y, w=None, b=None):
     
@@ -151,8 +153,8 @@ y = np.array([1,-1,-1,1,-1,1,1,-1,-1])
 w, b = np.array([-1/4, 1/4]), -1/4
 
 # Plot the data and support vector boundaries 
-linear_plot(X, y, w=w, b=b)
-plt.show()
+#linear_plot(X, y, w=w, b=b)
+#plt.show()
 # Calculate the norm of w
 norm_w = np.linalg.norm(w)
 # Calculate the margin
@@ -160,11 +162,68 @@ margin = 2 / norm_w
 # Print the result
 print(f"The margin of this particular SVM is approximately: {margin:.4f}")
 
-# Extracting support vectors coordinates (assuming SVM model is trained)
-# Giả sử bạn đã train SVM với X_train và lưu model vào biến svm_model
-# Lấy chỉ số các support vector
-#support_indices = svm_model.support_
-# Lấy toạ độ các support vector
-#support_vectors = [tuple(X_train[i]) for i in support_indices]
-#print("Support vectors:", support_vectors)
+
+
+# Part D [5 pts, Peer Review]: Compute the slack ξi associated with the misclassified points.
+
+
+slacks = []
+for xi, yi in zip(X, y):
+    margin = yi * (np.dot(w, xi) + b)
+    if margin < 0:  # misclassified
+        slack = 1 - margin
+        print(f"Point {tuple(xi)} misclassified, slack = {slack:.2f}")
+        slacks.append(slack)
+
+print("List of slacks for misclassified points:", slacks)
+
+# Build a LinearSVC model called lsvm. Train the model and get the parameters, pay attention to the loss parameter
+X, y = part2data()
+
+lsvm = LinearSVC(C=3, loss='squared_hinge', max_iter=10000)
+lsvm.fit(X, y)
+
+# use this code to plot the resulting model
+w = lsvm.coef_[0]
+b = lsvm.intercept_
+print(w, b)
+# linear_plot(X, y, w=w, b=b)
+# plt.show()
+
+
+X, y = part3data(N=300, seed=1235)
+#nonlinear_plot(X, y)
+# Fit an SVM with RBF kernel to the data with C=1 and gamma=1
+nlsvm = SVC(kernel='rbf', C=1, gamma=1)
+scores = cross_val_score(nlsvm, X, y, cv=5)
+print("cross-val mean-accuracy with C=1, gama=1: {:.3f}".format(np.mean(scores)))
+#Plot the resulting model
+nlsvm.fit(X, y)
+nonlinear_plot(X, y, nlsvm)
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('Nonlinear SVM Decision Boundary C=1, gama=1')
+#plt.show()
+
+
+
+# Example: Experiment with different C and gamma values
+nlsvm = SVC(kernel='rbf', C=1, gamma=10)
+scores = cross_val_score(nlsvm, X, y, cv=5)
+print("cross-val mean-accuracy with C=1, gamma=110: {:.3f}".format(np.mean(scores)))
+#Plot the resulting model
+nlsvm.fit(X, y)
+nonlinear_plot(X, y, nlsvm)
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('Nonlinear SVM Decision Boundary C=1, gamma=10:')
+
+# Test different kernels for SVC and compare their cross-validation accuracy
+kernels = ['linear', 'poly', 'rbf', 'sigmoid']
+for kernel in kernels:
+    nlsvm = SVC(kernel=kernel, C=1, gamma='scale')
+    scores = cross_val_score(nlsvm, X, y, cv=5)
+    print(f"Kernel: {kernel:7s} | Cross-val mean-accuracy: {np.mean(scores):.3f}")
+plt.show()
+
 
