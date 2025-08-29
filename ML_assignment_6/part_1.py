@@ -194,36 +194,40 @@ print(w, b)
 X, y = part3data(N=300, seed=1235)
 #nonlinear_plot(X, y)
 # Fit an SVM with RBF kernel to the data with C=1 and gamma=1
-nlsvm = SVC(kernel='rbf', C=1, gamma=1)
-scores = cross_val_score(nlsvm, X, y, cv=5)
-print("cross-val mean-accuracy with C=1, gama=1: {:.3f}".format(np.mean(scores)))
-#Plot the resulting model
-nlsvm.fit(X, y)
-nonlinear_plot(X, y, nlsvm)
-plt.xlabel('Feature 1')
-plt.ylabel('Feature 2')
-plt.title('Nonlinear SVM Decision Boundary C=1, gama=1')
-#plt.show()
+# nlsvm = SVC(kernel='rbf', C=1, gamma=1)
+# scores = cross_val_score(nlsvm, X, y, cv=5)
+# print("cross-val mean-accuracy with C=1, gama=1: {:.3f}".format(np.mean(scores)))
+# #Plot the resulting model
+# nlsvm.fit(X, y)
+# nonlinear_plot(X, y, nlsvm)
+# plt.xlabel('Feature 1')
+# plt.ylabel('Feature 2')
+# plt.title('Nonlinear SVM Decision Boundary C=1, gama=1')
+# #plt.show()
 
 
 
-# Example: Experiment with different C and gamma values
-nlsvm = SVC(kernel='rbf', C=1, gamma=10)
-scores = cross_val_score(nlsvm, X, y, cv=5)
-print("cross-val mean-accuracy with C=1, gamma=110: {:.3f}".format(np.mean(scores)))
-#Plot the resulting model
-nlsvm.fit(X, y)
-nonlinear_plot(X, y, nlsvm)
-plt.xlabel('Feature 1')
-plt.ylabel('Feature 2')
-plt.title('Nonlinear SVM Decision Boundary C=1, gamma=10:')
+# # Example: Experiment with different C and gamma values
+# nlsvm = SVC(kernel='rbf', C=1, gamma=10)
+# scores = cross_val_score(nlsvm, X, y, cv=5)
+# print("cross-val mean-accuracy with C=1, gamma=110: {:.3f}".format(np.mean(scores)))
+# #Plot the resulting model
+# nlsvm.fit(X, y)
+# nonlinear_plot(X, y, nlsvm)
+# plt.xlabel('Feature 1')
+# plt.ylabel('Feature 2')
+# plt.title('Nonlinear SVM Decision Boundary C=1, gamma=10:')
 
 # Test different kernels for SVC and compare their cross-validation accuracy
 kernels = ['linear', 'poly', 'rbf', 'sigmoid']
 for kernel in kernels:
-    nlsvm = SVC(kernel=kernel, C=1, gamma='scale')
+    nlsvm = SVC(kernel=kernel, C=1, gamma=1)
     scores = cross_val_score(nlsvm, X, y, cv=5)
     print(f"Kernel: {kernel:7s} | Cross-val mean-accuracy: {np.mean(scores):.3f}")
+    nonlinear_plot(X, y, nlsvm)
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.title(f'Nonlinear SVM Kernel: {kernel:7s} ')   
 plt.show()
 
 
