@@ -62,6 +62,12 @@ class PCA:
         order = np.argsort(eig_vals)[::-1]
         eig_vals = eig_vals[order]
         eig_vecs = eig_vecs[:, order]
+        
+        # Ensure eigenvectors have consistent signs (first element positive)
+        for i in range(eig_vecs.shape[1]):
+            if eig_vecs[0, i] < 0:
+                eig_vecs[:, i] = -eig_vecs[:, i]
+        
         return eig_vals, eig_vecs
 
     def compute_explained_variance(self, eigen_vals):
@@ -99,12 +105,17 @@ class PCA:
         if self.target_explained_variance is None:
             k = len(eig_pairs)
         else:
-            # Small epsilon to ensure meeting or exceeding the target
-            k = int(np.searchsorted(cum_var_exp, self.target_explained_variance - 1e-12) + 1)
+            # Find the minimum number of components that meet the target
+            # Use searchsorted with side='right' to find the first index where cum_var > target
+            idx = np.searchsorted(cum_var_exp, self.target_explained_variance, side='right')
+            k = idx
             k = min(max(k, 1), len(eig_pairs))
         # Stack top-k eigenvectors as columns
         matrix_w = np.column_stack([eig_pairs[i][1] for i in range(k)])
         return matrix_w
+
+
+    
 
     def transform_data(self, X_std, matrix_w):
         """
@@ -191,3 +202,58 @@ mean_vec_exp = [5.55111512, 2.77555756, 5.55111512, -5.55111512]
 mean_vec_act_tmp = mean_vec_act * 1e17
 
 assert pytest.approx(mean_vec_act_tmp, 0.1) == mean_vec_exp, "Check compute_mean_vector function"
+
+cov_mat_act = pca_handler.compute_cov(X_std_act, mean_vec_act) 
+
+cov_mat_exp = [[ 1.33333333, 0.97573583, 0.44021511, 0.02776305],
+ [ 0.97573583, 1.33333333, 0.88156376, 0.14760488],
+ [ 0.44021511, 0.88156376, 1.33333333, -0.82029039],
+ [ 0.02776305, 0.14760488, -0.82029039, 1.33333333]]
+
+assert pytest.approx(cov_mat_act, 0.01) == cov_mat_exp, "Check compute_cov function"
+
+eig_vals_act, eig_vecs_act = pca_handler.compute_eigen_vector(cov_mat_act) 
+
+eig_vals_exp = [2.96080083e+00, 1.80561744e+00, 5.66915059e-01, 7.86907276e-17]
+
+eig_vecs_exp = [[ 0.50989282,  0.38162981,  0.72815056,  0.25330765],
+ [ 0.59707545,  0.33170546, -0.37363029, -0.62759286],
+ [ 0.57599397, -0.37480162, -0.41446394,  0.59663585],
+ [-0.22746684,  0.77708038, -0.3980161,   0.43126337]]
+
+assert pytest.approx(eig_vals_act, 0.01) == eig_vals_exp, "Check compute_eigen_vector function"
+
+for act, exp in zip(eig_vecs_act, eig_vecs_exp):
+    assert pytest.approx(act, 0.01) == exp, "Check compute_eigen_vector function"
+
+    pca_handler.feature_size = X.shape[1]
+var_exp_act = pca_handler.compute_explained_variance(eig_vals_act) 
+
+var_exp_exp = [0.5551501556710813, 0.33855327084133857, 0.10629657348758019, 1.475451142706682e-17]
+
+assert pytest.approx(var_exp_act, 0.01) == var_exp_exp, "Check compute_explained_variance function"
+
+# eig_pairs = np.array([(2.9608008302457662, np.array([ 0.50989282,  0.59707545,  0.57599397, -0.22746684])),
+# (1.8056174444871387, np.array([ 0.38162981,  0.33170546, -0.37480162,  0.77708038])),
+# (0.5669150586004276, np.array([ 0.72815056, -0.37363029, -0.41446394, -0.3980161 ])), 
+# (7.869072761102302e-17, np.array([ 0.25330765, -0.62759286,  0.59663585,  0.43126337]))])
+
+eig_pairs = [
+    (2.9608008302457662, np.array([0.50989282, 0.59707545, 0.57599397, -0.22746684])),
+    (1.8056174444871387, np.array([0.38162981, 0.33170546, -0.37480162, 0.77708038])),
+    (0.5669150586004276, np.array([0.72815056, -0.37363029, -0.41446394, -0.3980161])),
+    (7.869072761102302e-17, np.array([0.25330765, -0.62759286, 0.59663585, 0.43126337]))
+]
+
+
+cum_var_exp = [0.55515016, 0.89370343, 1, 1]
+
+matrix_w_exp = [[0.50989282, 0.38162981], 
+                [0.59707545, 0.33170546], 
+                [0.57599397, -0.37480162], 
+                [-0.22746684, 0.77708038]]
+
+matrix_w_act = pca_handler.compute_weight_matrix(eig_pairs=eig_pairs, cum_var_exp=cum_var_exp)
+
+for act, exp in zip(matrix_w_act, matrix_w_exp):
+    assert pytest.approx(act, 0.001) == exp, "Check compute_weight_matrix function"
