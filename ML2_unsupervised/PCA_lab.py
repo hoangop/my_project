@@ -166,20 +166,20 @@ class PCA:
 # X_train = pickle.load(open('./data/fashionmnist/train_images.pkl','rb'))
 # y_train = pickle.load(open('./data/fashionmnist/train_image_labels.pkl','rb'))
 
-# from sklearn.datasets import fetch_openml
-# fashion_mnist = fetch_openml('Fashion-MNIST', version=1, as_frame=False)
-# X_train, y_train = fashion_mnist["data"], fashion_mnist["target"]
+from sklearn.datasets import fetch_openml
+fashion_mnist = fetch_openml('Fashion-MNIST', version=1, as_frame=False)
+X_train, y_train = fashion_mnist["data"], fashion_mnist["target"]
 
-# X_train = X_train[:1500]
-# y_train = y_train[:1500]
+X_train = X_train[:1500]
+y_train = y_train[:1500]
 
-# pca_handler = PCA(target_explained_variance=0.99)
-# X_train_updated = pca_handler.fit(X_train)
+pca_handler = PCA(target_explained_variance=0.99)
+X_train_updated = pca_handler.fit(X_train)
 
 
 
-# print(f"Kích thước ban đầu: {X_train.shape}")
-# print(f"Kích thước sau khi giảm chiều: {X_train_updated.shape}")
+print(f"Kích thước ban đầu: {X_train.shape}")
+print(f"Kích thước sau khi giảm chiều: {X_train_updated.shape}")
 
 np.random.seed(42)
 X = np.array([[0.39, 1.07, 0.06, 0.79], [-1.15, -0.51, -0.21, -0.7], [-1.36, 0.57, 0.37, 0.09], [0.06, 1.04, 0.99, -1.78]])

@@ -142,6 +142,24 @@ HTML("""
 </style>
 """)
 
+
+#PArt 1 A
+import numpy as np
+
+# Data and Labels 
+X = np.array([[1,8],[7,2],[6,-1],[-5,0], [-5,1], [-5,2],[6,3],[6,1],[5,2]])
+y = np.array([1,-1,-1,1,-1,1,1,-1,-1])
+
+# Support vector parameters 
+w, b = np.array([-1/4, 1/4]), -1/4
+
+# Plot the data and support vector boundaries 
+linear_plot(X, y, w=w, b=b)
+
+
+
+
+
 # Part 4: Automating the Parameter Search
 print("Part 4: Automating the Parameter Search")
 print("=" * 50)
@@ -187,10 +205,10 @@ print(f"Best estimator: {grid.best_estimator_}")
 best_svm = grid.best_estimator_
 best_svm.fit(X, y)
 # Plot decision boundary with best model
-# print("\nPlotting decision boundary with best parameters...")
-# nonlinear_plot(X, y, best_svm)
-# plt.title(f'Best SVM: C={grid.best_params_["C"]:.4f}, γ={grid.best_params_["gamma"]:.4f}')
-# plt.show()
+print("\nPlotting decision boundary with best parameters...")
+nonlinear_plot(X, y, best_svm)
+plt.title(f'Best SVM: C={grid.best_params_["C"]:.4f}, γ={grid.best_params_["gamma"]:.4f}')
+plt.show()
 
 # Compare with manual parameter selection
 print("\nComparison with manual parameter selection:")
